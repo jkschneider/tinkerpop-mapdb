@@ -1,0 +1,49 @@
+plugins {
+    id "com.jfrog.bintray" version "1.0"
+}
+
+apply plugin: 'java'
+
+repositories {
+    jcenter()
+    maven { url file('repo') }
+}
+
+bintray {
+    user = 'jkschneider'
+    key = 'bintray_api_key'
+    dryRun = true
+    publish = true
+
+    pkg {
+        vcsUrl = 'git@github.com:jkschneider/tinkerpop-mapdb.git'
+        websiteUrl = 'https://github.com/jkschneider/tinkerpop-mapdb'
+        issueTrackerUrl = 'https://github.com/jkschneider/tinkerpop-mapdb/issues'
+        licenses = ['Apache-2.0']
+        labels = ['graph', 'tinkerpop', 'mapdb', 'data']
+        publicDownloadNumbers = true
+        version {
+            name = '0.1.0' // bintray logical version name
+            vcsTag = '0.1.0'
+//        gpg {
+//            sign = true //Determines whether to GPG sign the files. The default is false
+//            passphrase = 'passphrase'
+//        }
+        }
+    }
+}
+
+dependencies {
+    compile('com.tinkerpop:gremlin-core:3.0.0-SNAPSHOT') {
+        exclude module: 'groovy-all'
+        exclude module: 'kryo' // depends on a different coordinate - com.esotericsoftware.kryo
+    }
+
+    compile 'org.mapdb:mapdb:1.0.6'
+    compile 'com.esotericsoftware:kryo:3.0.0'
+
+    testCompile 'junit:junit:4.11'
+    testCompile 'com.tinkerpop:gremlin-test:3.0.0-SNAPSHOT'
+    testCompile 'com.tinkerpop:gremlin-algorithm:3.0.0-SNAPSHOT'
+    testCompile 'com.fasterxml.jackson.core:jackson-databind:2.5.0'
+}
