@@ -7,8 +7,8 @@ import com.tinkerpop.gremlin.structure.util.StringFactory;
 import java.util.*;
 
 public class MapdbVertex extends MapdbElement implements Vertex, Vertex.Iterators {
-    transient protected Map<String, Set<Edge>> outEdges = new HashMap<>();
-    transient protected Map<String, Set<Edge>> inEdges = new HashMap<>();
+    protected Map<String, Set<Edge>> outEdges = new HashMap<>();
+    protected Map<String, Set<Edge>> inEdges = new HashMap<>();
 
     private static final Object[] EMPTY_ARGS = new Object[0];
 

@@ -1,6 +1,8 @@
 package com.github.jkschneider.tinkermapdb.graph;
 
 import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.io.UnsafeInput;
 import com.esotericsoftware.kryo.io.UnsafeOutput;
 import com.github.jkschneider.tinkermapdb.graph.traversal.strategy.MapdbElementStepStrategy;
@@ -70,20 +72,27 @@ public class MapdbGraph implements Graph, Graph.Iterators {
 
         @Override
         public void serialize(DataOutput out, T t) throws IOException {
-            UnsafeOutput o = new UnsafeOutput(new ByteArrayOutputStream());
+            ByteArrayOutputStream os = new ByteArrayOutputStream(1024);
+            Output o = new Output(os);
             kryo.writeObject(o, t);
+            o.flush();
             byte[] buf = o.getBuffer();
-            out.writeInt(buf.length);
-            out.write(o.getBuffer());
+            out.writeInt((int) o.total());
+            out.write(buf, 0, (int) o.total());
             o.close();
+            os.close();
         }
 
         @Override
         public T deserialize(DataInput in, int available) throws IOException {
             final int bufLength = in.readInt();
-            UnsafeInput i = new UnsafeInput(new ByteArrayInputStream(new byte[bufLength]));
+            byte[] buf = new byte[bufLength];
+            in.readFully(buf);
+            ByteArrayInputStream is = new ByteArrayInputStream(buf);
+            Input i = new Input(is);
             T t = kryo.readObject(i, tClass);
             i.close();
+            is.close();
             return t;
         }
 
