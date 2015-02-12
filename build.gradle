@@ -9,13 +9,17 @@ repositories {
     maven { url file('repo') }
 }
 
+group = 'io.jons'
+
 bintray {
     user = 'jkschneider'
-    key = 'bintray_api_key'
-    dryRun = true
+    key = bintrayApiKey
+    dryRun = false
     publish = true
 
     pkg {
+        repo = 'jons-oss'
+        name = 'tinkerpop-mapdb'
         vcsUrl = 'git@github.com:jkschneider/tinkerpop-mapdb.git'
         websiteUrl = 'https://github.com/jkschneider/tinkerpop-mapdb'
         issueTrackerUrl = 'https://github.com/jkschneider/tinkerpop-mapdb/issues'
@@ -23,12 +27,8 @@ bintray {
         labels = ['graph', 'tinkerpop', 'mapdb', 'data']
         publicDownloadNumbers = true
         version {
-            name = '0.1.0' // bintray logical version name
-            vcsTag = '0.1.0'
-//        gpg {
-//            sign = true //Determines whether to GPG sign the files. The default is false
-//            passphrase = 'passphrase'
-//        }
+            name = project.version
+            vcsTag = project.version
         }
     }
 }
@@ -46,5 +46,4 @@ dependencies {
     testCompile 'com.tinkerpop:gremlin-test:3.0.0-SNAPSHOT'
     testCompile 'com.tinkerpop:gremlin-algorithm:3.0.0-SNAPSHOT'
     testCompile 'com.fasterxml.jackson.core:jackson-databind:2.5.0'
-    testCompile "org.mockito:mockito-core:2.+"
 }
