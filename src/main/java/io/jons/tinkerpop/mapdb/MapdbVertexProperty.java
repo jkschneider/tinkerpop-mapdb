@@ -11,13 +11,13 @@ import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MapdbVertexProperty<V> extends MapdbElement implements VertexProperty<V>, VertexProperty.Iterators {
-    transient protected final MapdbVertex vertex;
-    protected final String key;
-    protected final V value;
+    protected Object vertexId;
+    protected String key;
+    protected V value;
 
     public MapdbVertexProperty(final MapdbVertex vertex, final String key, final V value, final Object... propertyKeyValues) {
         super(MapdbHelper.getNextId(vertex.mapdbGraph()), key, vertex.mapdbGraph());
-        this.vertex = vertex;
+        this.vertexId = vertex.id;
         this.key = key;
         this.value = value;
         ElementHelper.legalPropertyKeyValueArray(propertyKeyValues);
@@ -26,7 +26,7 @@ public class MapdbVertexProperty<V> extends MapdbElement implements VertexProper
 
     public MapdbVertexProperty(final Object id, final MapdbVertex vertex, final String key, final V value, final Object... propertyKeyValues) {
         super(id, key, vertex.mapdbGraph());
-        this.vertex = vertex;
+        this.vertexId = vertex.id;
         this.key = key;
         this.value = value;
         ElementHelper.legalPropertyKeyValueArray(propertyKeyValues);
@@ -68,29 +68,30 @@ public class MapdbVertexProperty<V> extends MapdbElement implements VertexProper
     public <U> Property<U> property(final String key, final U value) {
         final Property<U> property = new MapdbProperty<U>(this, key, value);
         this.properties.put(key, Collections.singletonList(property));
-        mapdbGraph().vertices.put(vertex.id, vertex);
+        mapdbGraph().vertices.put(vertexId, element());
         return property;
     }
 
     @Override
     public Vertex element() {
-        return this.vertex;
+        return mapdbGraph().vertexIterator(vertexId).next();
     }
 
     @Override
     public void remove() {
-        if (this.vertex.properties.containsKey(this.key)) {
-            this.vertex.properties.get(this.key).remove(this);
-            if (this.vertex.properties.get(this.key).size() == 0) {
-                this.vertex.properties.remove(this.key);
-                mapdbGraph().vertexIndex.remove(this.key, this.value, this.vertex);
+        MapdbVertex vertex = (MapdbVertex) element();
+        if (vertex.properties.containsKey(this.key)) {
+            vertex.properties.get(this.key).remove(this);
+            if (vertex.properties.get(this.key).size() == 0) {
+                vertex.properties.remove(this.key);
+                mapdbGraph().vertexIndex.remove(this.key, this.value, vertex);
             }
             final AtomicBoolean delete = new AtomicBoolean(true);
-            this.vertex.propertyIterator(this.key).forEachRemaining(property -> {
+            vertex.propertyIterator(this.key).forEachRemaining(property -> {
                 if (property.value().equals(this.value))
                     delete.set(false);
             });
-            if (delete.get()) mapdbGraph().vertexIndex.remove(this.key, this.value, this.vertex);
+            if (delete.get()) mapdbGraph().vertexIndex.remove(this.key, this.value, vertex);
             this.properties.clear();
             this.removed = true;
         }

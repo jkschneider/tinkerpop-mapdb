@@ -6,8 +6,10 @@ import com.esotericsoftware.kryo.io.Output;
 import org.mapdb.Serializer;
 
 import java.io.*;
+import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
-class KryoSerializer<T> implements Serializer<T>, Serializable {
+class KryoSerializer<T> extends Serializer<T> implements Serializable {
     transient Class<T> tClass;
 
     private transient static ThreadLocal<Kryo> kryoPool = new ThreadLocal<Kryo>() {
@@ -18,6 +20,8 @@ class KryoSerializer<T> implements Serializer<T>, Serializable {
                 register(MapdbEdge.class, 101);
                 register(MapdbProperty.class, 102);
                 register(MapdbVertexProperty.class, 103);
+                register(ConcurrentHashMap.class, 104);
+                register(HashMap.class, 105);
                 setReferences(false);
             }};
         }
@@ -33,11 +37,9 @@ class KryoSerializer<T> implements Serializer<T>, Serializable {
         Output o = new Output(os);
         kryoPool.get().writeObject(o, t);
         o.flush();
-        byte[] buf = o.getBuffer();
         out.writeInt((int) o.total());
-        out.write(buf, 0, (int) o.total());
+        out.write(os.toByteArray(), 0, (int) o.total());
         o.close();
-        os.close();
     }
 
     @Override
@@ -49,7 +51,6 @@ class KryoSerializer<T> implements Serializer<T>, Serializable {
         Input i = new Input(is);
         T t = kryoPool.get().readObject(i, tClass);
         i.close();
-        is.close();
         return t;
     }
 

@@ -40,7 +40,7 @@ dependencies {
         exclude module: 'kryo' // depends on a different coordinate - com.esotericsoftware.kryo
     }
 
-    compile 'org.mapdb:mapdb:1.0.6'
+    compile 'org.mapdb:mapdb:2.0-alpha1'
     compile 'com.esotericsoftware:kryo:3.0.0'
 
     testCompile 'junit:junit:4.11'
