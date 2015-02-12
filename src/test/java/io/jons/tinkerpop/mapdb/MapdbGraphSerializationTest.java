@@ -29,10 +29,6 @@ public class MapdbGraphSerializationTest {
             if(prev != null)
                 v.addEdge("to", prev);
             prev = v;
-
-            if(i % 1000 == 0) {
-                System.out.println(s.getCurrSize());
-            }
         }
 
         assertNotNull(prev);
@@ -41,6 +37,6 @@ public class MapdbGraphSerializationTest {
             assertEquals("vertex " + i + " does not have any in vertices",
                     1, prev.out().count().next().intValue());
             prev = prev.out().next();
-        }
+        }f
     }
 }
