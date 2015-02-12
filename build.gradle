@@ -5,6 +5,7 @@ plugins {
 apply plugin: 'java'
 
 repositories {
+    mavenCentral()
     jcenter()
     maven { url file('repo') }
 }
