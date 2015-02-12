@@ -1,12 +1,7 @@
-package com.github.jkschneider.tinkermapdb.graph;
+package io.jons.tinkerpop.mapdb;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
-import com.esotericsoftware.kryo.io.UnsafeInput;
-import com.esotericsoftware.kryo.io.UnsafeOutput;
-import com.github.jkschneider.tinkermapdb.graph.traversal.strategy.MapdbElementStepStrategy;
-import com.github.jkschneider.tinkermapdb.graph.traversal.strategy.MapdbGraphStepStrategy;
+import io.jons.tinkerpop.mapdb.traversal.strategy.MapdbElementStepStrategy;
+import io.jons.tinkerpop.mapdb.traversal.strategy.MapdbGraphStepStrategy;
 import com.tinkerpop.gremlin.process.TraversalStrategies;
 import com.tinkerpop.gremlin.process.computer.GraphComputer;
 import com.tinkerpop.gremlin.structure.*;
@@ -18,10 +13,8 @@ import org.apache.commons.configuration.CompositeConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
-import org.mapdb.Serializer;
 import org.mapdb.Store;
 
-import java.io.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
@@ -56,51 +49,6 @@ public class MapdbGraph implements Graph, Graph.Iterators {
     protected int instanceId = instanceCounter.incrementAndGet();
 
     protected Long currentId = -1l;
-
-    private static class KryoSerializer<T> implements Serializer<T>, Serializable {
-        transient Class<T> tClass;
-        transient Kryo kryo = new Kryo() {{
-            register(MapdbVertex.class, 0);
-            register(MapdbEdge.class, 1);
-            register(MapdbProperty.class, 2);
-            setReferences(false);
-        }};
-
-        public KryoSerializer(Class<T> tClass) {
-            this.tClass = tClass;
-        }
-
-        @Override
-        public void serialize(DataOutput out, T t) throws IOException {
-            ByteArrayOutputStream os = new ByteArrayOutputStream(1024);
-            Output o = new Output(os);
-            kryo.writeObject(o, t);
-            o.flush();
-            byte[] buf = o.getBuffer();
-            out.writeInt((int) o.total());
-            out.write(buf, 0, (int) o.total());
-            o.close();
-            os.close();
-        }
-
-        @Override
-        public T deserialize(DataInput in, int available) throws IOException {
-            final int bufLength = in.readInt();
-            byte[] buf = new byte[bufLength];
-            in.readFully(buf);
-            ByteArrayInputStream is = new ByteArrayInputStream(buf);
-            Input i = new Input(is);
-            T t = kryo.readObject(i, tClass);
-            i.close();
-            is.close();
-            return t;
-        }
-
-        @Override
-        public int fixedSize() {
-            return -1;
-        }
-    }
 
     protected Map<Object, Vertex> vertices = db.createHashMap(getName() + "-vertices")
 //            .keySerializer(Serializer.LONG)

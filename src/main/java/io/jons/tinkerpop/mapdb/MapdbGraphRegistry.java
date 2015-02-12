@@ -1,4 +1,4 @@
-package com.github.jkschneider.tinkermapdb.graph;
+package io.jons.tinkerpop.mapdb;
 
 import java.util.HashMap;
 import java.util.Map;

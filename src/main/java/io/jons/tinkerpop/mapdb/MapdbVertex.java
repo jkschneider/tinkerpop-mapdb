@@ -1,4 +1,4 @@
-package com.github.jkschneider.tinkermapdb.graph;
+package io.jons.tinkerpop.mapdb;
 
 import com.tinkerpop.gremlin.structure.*;
 import com.tinkerpop.gremlin.structure.util.ElementHelper;
@@ -49,6 +49,7 @@ public class MapdbVertex extends MapdbElement implements Vertex, Vertex.Iterator
         this.properties.put(key, list);
         mapdbGraph().vertexIndex.autoUpdate(key, value, null, this);
         ElementHelper.attachProperties(vertexProperty, keyValues);
+        this.mapdbGraph().vertices.put(id, this); // since mapdb values should be immutable
         return vertexProperty;
     }
 

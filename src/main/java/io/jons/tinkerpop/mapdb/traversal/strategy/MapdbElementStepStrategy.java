@@ -1,4 +1,4 @@
-package com.github.jkschneider.tinkermapdb.graph.traversal.strategy;
+package io.jons.tinkerpop.mapdb.traversal.strategy;
 
 import com.tinkerpop.gremlin.process.Step;
 import com.tinkerpop.gremlin.process.Traversal;

@@ -1,7 +1,7 @@
-package com.github.jkschneider.tinkermapdb.graph.traversal.sideEffect;
+package io.jons.tinkerpop.mapdb.traversal.sideEffect;
 
-import com.github.jkschneider.tinkermapdb.graph.MapdbGraph;
-import com.github.jkschneider.tinkermapdb.graph.MapdbHelper;
+import io.jons.tinkerpop.mapdb.MapdbGraph;
+import io.jons.tinkerpop.mapdb.MapdbHelper;
 import com.tinkerpop.gremlin.process.graph.traversal.step.sideEffect.GraphStep;
 import com.tinkerpop.gremlin.process.graph.util.HasContainer;
 import com.tinkerpop.gremlin.process.traversal.util.TraversalHelper;

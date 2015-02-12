@@ -1,4 +1,4 @@
-package com.github.jkschneider.tinkermapdb.graph;
+package io.jons.tinkerpop.mapdb;
 
 import com.tinkerpop.gremlin.structure.Graph;
 import com.tinkerpop.gremlin.structure.util.GraphVariableHelper;

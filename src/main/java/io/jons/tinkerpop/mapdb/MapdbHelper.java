@@ -1,4 +1,4 @@
-package com.github.jkschneider.tinkermapdb.graph;
+package io.jons.tinkerpop.mapdb;
 
 import com.tinkerpop.gremlin.structure.*;
 import com.tinkerpop.gremlin.structure.util.ElementHelper;
@@ -17,7 +17,7 @@ public class MapdbHelper {
 
         Object idValue = ElementHelper.getIdValue(keyValues).orElse(null);
 
-        final Edge edge;
+        final MapdbEdge edge;
         if (null != idValue) {
             if (graph.edges.containsKey(idValue))
                 throw Graph.Exceptions.edgeWithIdAlreadyExists(idValue);
@@ -27,9 +27,13 @@ public class MapdbHelper {
 
         edge = new MapdbEdge(idValue, outVertex, label, inVertex, graph);
         ElementHelper.attachProperties(edge, keyValues);
-        graph.edges.put(edge.id(), edge);
+        graph.edges.put(edge.id, edge);
         MapdbHelper.addOutEdge(outVertex, label, edge);
         MapdbHelper.addInEdge(inVertex, label, edge);
+
+        graph.vertices.put(outVertex.id, outVertex);
+        graph.vertices.put(inVertex.id, inVertex);
+
         return edge;
     }
 
@@ -40,6 +44,7 @@ public class MapdbHelper {
             vertex.outEdges.put(label, edges);
         }
         edges.add(edge);
+        vertex.mapdbGraph().vertices.put(vertex.id, vertex);
     }
 
     protected static void addInEdge(final MapdbVertex vertex, final String label, final Edge edge) {
@@ -49,6 +54,7 @@ public class MapdbHelper {
             vertex.inEdges.put(label, edges);
         }
         edges.add(edge);
+        vertex.mapdbGraph().vertices.put(vertex.id, vertex);
     }
 
     public static List<MapdbVertex> queryVertexIndex(final MapdbGraph graph, final String key, final Object value) {

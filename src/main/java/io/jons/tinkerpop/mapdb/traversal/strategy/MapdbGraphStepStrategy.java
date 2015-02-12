@@ -1,6 +1,6 @@
-package com.github.jkschneider.tinkermapdb.graph.traversal.strategy;
+package io.jons.tinkerpop.mapdb.traversal.strategy;
 
-import com.github.jkschneider.tinkermapdb.graph.traversal.sideEffect.MapdbGraphStep;
+import io.jons.tinkerpop.mapdb.traversal.sideEffect.MapdbGraphStep;
 import com.tinkerpop.gremlin.process.Step;
 import com.tinkerpop.gremlin.process.Traversal;
 import com.tinkerpop.gremlin.process.TraversalEngine;

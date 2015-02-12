@@ -1,4 +1,5 @@
-import com.github.jkschneider.tinkermapdb.graph.MapdbGraph;
+package io.jons.tinkerpop.mapdb;
+
 import com.tinkerpop.gremlin.structure.StructureStandardSuite;
 import org.junit.runner.RunWith;
 
