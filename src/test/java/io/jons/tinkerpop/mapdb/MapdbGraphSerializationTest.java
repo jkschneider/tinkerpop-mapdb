@@ -19,7 +19,6 @@ public class MapdbGraphSerializationTest {
         Configuration c = new MapConfiguration(confMap);
         c.setProperty("storage.cacheSize", 1);
         MapdbGraph g = MapdbGraph.open(c);
-        Store s = g.store();
 
         int testSize = 1000;
 
@@ -37,6 +36,6 @@ public class MapdbGraphSerializationTest {
             assertEquals("vertex " + i + " does not have any in vertices",
                     1, prev.out().count().next().intValue());
             prev = prev.out().next();
-        }f
+        }
     }
 }

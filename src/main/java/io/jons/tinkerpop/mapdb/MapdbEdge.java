@@ -8,6 +8,7 @@ import com.tinkerpop.gremlin.util.iterator.IteratorUtils;
 
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 public class MapdbEdge extends MapdbElement implements Edge, Edge.Iterators {
@@ -28,6 +29,7 @@ public class MapdbEdge extends MapdbElement implements Edge, Edge.Iterators {
         final Property<V> newProperty = new MapdbProperty<>(this, key, value);
         this.properties.put(key, Collections.singletonList(newProperty));
         mapdbGraph().edgeIndex.autoUpdate(key, value, oldProperty.isPresent() ? oldProperty.value() : null, this);
+        mapdbGraph().edges.put(id, this);
         return newProperty;
     }
 
@@ -39,14 +41,14 @@ public class MapdbEdge extends MapdbElement implements Edge, Edge.Iterators {
         final MapdbVertex inVertex = inVertex();
 
         if (null != outVertex && null != outVertex.outEdges) {
-            final Set<Edge> edges = outVertex.outEdges.get(this.label());
+            final Map<Object, MapdbEdge> edges = outVertex.outEdges.get(this.label());
             if (null != edges)
-                edges.remove(this);
+                edges.remove(this.id());
         }
         if (null != inVertex && null != inVertex.inEdges) {
-            final Set<Edge> edges = inVertex.inEdges.get(this.label());
+            final Map<Object, MapdbEdge> edges = inVertex.inEdges.get(this.label());
             if (null != edges)
-                edges.remove(this);
+                edges.remove(this.id());
         }
 
         mapdbGraph().edgeIndex.removeElement(this);

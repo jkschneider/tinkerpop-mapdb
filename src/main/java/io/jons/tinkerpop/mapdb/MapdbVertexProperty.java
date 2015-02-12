@@ -68,6 +68,7 @@ public class MapdbVertexProperty<V> extends MapdbElement implements VertexProper
     public <U> Property<U> property(final String key, final U value) {
         final Property<U> property = new MapdbProperty<U>(this, key, value);
         this.properties.put(key, Collections.singletonList(property));
+        mapdbGraph().vertices.put(vertex.id, vertex);
         return property;
     }
 
