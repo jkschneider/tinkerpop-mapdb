@@ -8,30 +8,45 @@ import com.tinkerpop.gremlin.structure.util.StringFactory;
 
 import java.util.Iterator;
 
-public class MapdbProperty<V> implements Property<V> {
+public class MapdbProperty<T> implements Property<T> {
     protected String key;
-    protected V value;
+    protected T value;
     protected int graphId;
 
     // one of the two of these will be non-null
     protected Object edgeId;
     protected Object vertexId;
 
-    public MapdbProperty(MapdbElement element, String key, V value) {
+    protected transient MapdbElement element;
+
+    public MapdbProperty(MapdbElement element, String key, T value) {
         if(element instanceof MapdbEdge)
             edgeId = element.id;
         else
             vertexId = element.id;
 
+        this.element = element;
         graphId = element.graphId;
 
         this.key = key;
         this.value = value;
     }
 
+    /**
+     * Kryo deserializer will call this immediately upon construction so that if the underlying edge or vertex is
+     * removed from the graph later, we stil have a reference to it in a detached state
+     */
+    public MapdbProperty<T> refreshElement() {
+        Iterator<? extends Element> iter = vertexId != null ?
+                MapdbGraphRegistry.find(graphId).vertexIterator(vertexId) :
+                MapdbGraphRegistry.find(graphId).edgeIterator(edgeId);
+        element = iter.hasNext() ? (MapdbElement) iter.next() : null;
+        return this;
+    }
+
     @Override
     public Element element() {
-        return this.mapdbElement();
+        return element;
     }
 
     @Override
@@ -40,7 +55,7 @@ public class MapdbProperty<V> implements Property<V> {
     }
 
     @Override
-    public V value() {
+    public T value() {
         return this.value;
     }
 
@@ -64,15 +79,8 @@ public class MapdbProperty<V> implements Property<V> {
 
     @Override
     public void remove() {
-        mapdbElement().properties.remove(this.key);
-        if (mapdbElement() instanceof Edge)
-            mapdbElement().mapdbGraph().edgeIndex.remove(key, value, (MapdbEdge) mapdbElement());
-    }
-
-    private MapdbElement mapdbElement() {
-        Iterator<? extends Element> iter = vertexId != null ?
-            MapdbGraphRegistry.find(graphId).vertexIterator(vertexId) :
-            MapdbGraphRegistry.find(graphId).edgeIterator(edgeId);
-        return iter.hasNext() ? (MapdbElement) iter.next() : null;
+        element.properties.remove(this.key);
+        if (element instanceof Edge)
+            element.mapdbGraph().edgeIndex.remove(key, value, (MapdbEdge) element);
     }
 }

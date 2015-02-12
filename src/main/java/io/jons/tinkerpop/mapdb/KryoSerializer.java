@@ -4,6 +4,7 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import org.mapdb.Serializer;
+import org.objenesis.strategy.StdInstantiatorStrategy;
 
 import java.io.*;
 import java.util.HashMap;
@@ -18,7 +19,12 @@ class KryoSerializer<T> extends Serializer<T> implements Serializable {
             return new Kryo() {{
                 register(MapdbVertex.class, 100);
                 register(MapdbEdge.class, 101);
-                register(MapdbProperty.class, 102);
+
+                StdInstantiatorStrategy strategy = new StdInstantiatorStrategy();
+
+                register(MapdbProperty.class, 102)
+                        .setInstantiator(() -> strategy.newInstantiatorOf(MapdbProperty.class).newInstance().refreshElement());
+
                 register(MapdbVertexProperty.class, 103);
                 register(ConcurrentHashMap.class, 104);
                 register(HashMap.class, 105);
