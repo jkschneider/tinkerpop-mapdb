@@ -38,7 +38,7 @@ public abstract class MapdbElement implements Element, Element.Iterators {
     protected MapdbGraph mapdbGraph() { return MapdbGraphRegistry.find(graphId); }
 
     @Override
-    public <V> Property<V> property(String key, V value) {
+    public <V> Property<V> property(final String key) {
         if (this.removed) throw Element.Exceptions.elementAlreadyRemoved(this.getClass(), this.id);
         return this.properties.containsKey(key) ? this.properties.get(key).get(0) : Property.<V>empty();
     }
