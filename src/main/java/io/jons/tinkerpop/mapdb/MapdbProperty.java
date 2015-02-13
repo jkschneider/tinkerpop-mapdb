@@ -37,10 +37,10 @@ public class MapdbProperty<T> implements Property<T> {
      * removed from the graph later, we stil have a reference to it in a detached state
      */
     public MapdbProperty<T> refreshElement() {
-        Iterator<? extends Element> iter = vertexId != null ?
-                MapdbGraphRegistry.find(graphId).vertexIterator(vertexId) :
-                MapdbGraphRegistry.find(graphId).edgeIterator(edgeId);
-        element = iter.hasNext() ? (MapdbElement) iter.next() : null;
+        if(vertexId != null)
+            element = (MapdbElement) MapdbGraphRegistry.find(graphId).vertexIterator(vertexId).next();
+        else if(edgeId != null)
+            element = (MapdbElement) MapdbGraphRegistry.find(graphId).edgeIterator(edgeId).next();
         return this;
     }
 

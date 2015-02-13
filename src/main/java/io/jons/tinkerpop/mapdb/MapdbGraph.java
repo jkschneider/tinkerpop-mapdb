@@ -25,6 +25,18 @@ import java.util.stream.Stream;
 @Graph.OptIn(Graph.OptIn.SUITE_GROOVY_PROCESS_STANDARD)
 @Graph.OptIn(Graph.OptIn.SUITE_GROOVY_ENVIRONMENT)
 @Graph.OptIn(Graph.OptIn.SUITE_GROOVY_ENVIRONMENT_INTEGRATE)
+@Graph.OptOut(
+        test = "com.tinkerpop.gremlin.structure.IoTest",
+        method = "shouldProperlySerializeCustomIdWithKryo",
+        reason = "Ids must be serializable")
+@Graph.OptOut(
+        test = "com.tinkerpop.gremlin.structure.IoTest",
+        method = "shouldProperlySerializeDeserializeCustomIdWithGraphSON",
+        reason = "Ids must be serializable")
+@Graph.OptOut(
+        test = "com.tinkerpop.gremlin.structure.GraphTest",
+        method = "shouldAddVertexWithUserSuppliedAnyId",
+        reason = "Ids must be serializable")
 public class MapdbGraph implements Graph, Graph.Iterators {
     private static AtomicInteger instanceCounter = new AtomicInteger();
 
